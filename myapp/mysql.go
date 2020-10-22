@@ -8,11 +8,8 @@ import (
 	"strings"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
-
-	//"time"
-
 	_ "github.com/go-sql-driver/mysql"
+	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -25,7 +22,7 @@ const (
 /*資料總筆數 = total * num_times*/
 var (
 	total     int = 10000 // 每次插入幾筆資料
-	num_times int = 40000 // go func 會執行幾次
+	num_times int = 400   // go func 會執行幾次
 )
 
 type Message struct {
@@ -59,7 +56,7 @@ func mysql() {
 	defer db.Close()
 
 	//db設定
-	db.SetConnMaxLifetime(time.Second * 1000)
+	db.SetConnMaxLifetime(time.Second * 500)
 	db.SetMaxOpenConns(100)
 
 	fmt.Println("====start=====")
@@ -104,8 +101,9 @@ func worker(jobChan <-chan Job) {
 }
 
 func sqlExec(job Job) {
-	buf := make([]byte, 0, job.total)
+	buf := make([]byte, 0, job.total+1)
 	buf = append(buf, "INSERT INTO `messages` (`room_id`, `type`, `sender`, `content`, `hash`, `read_tab`) VALUES"...)
+
 	for i := 0; i < job.total; i++ {
 		tmp_name := RandName()
 
@@ -119,15 +117,18 @@ func sqlExec(job Job) {
 		}
 		str := fmt.Sprintf("(%d ,'%s' ,'%s', '%s', '%s', %d)", msg.room_id, msg.type_tag, msg.sender, msg.content, msg.hash, msg.read_tab)
 		buf = append(buf, str+","...)
+	}
 
+	if len(buf) == 0 {
+		return
+	} else {
 		fmt.Println("---開始" + strconv.Itoa(job.n) + "次插入total條！")
-		//fmt.Println(strings.Trim(string(buf), ","))
 		_, err := job.db.Exec(strings.Trim(string(buf), ","))
 		checkErr(err)
 		fmt.Println("完成---" + strconv.Itoa(job.n) + "次插入total條！")
 		job.ch <- 1
-
 	}
+
 }
 
 func checkErr(err error) {
