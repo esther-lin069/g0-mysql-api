@@ -1,0 +1,30 @@
+version: '3'
+services:
+    golang:
+        image: goenv
+        build: ./go
+        container_name: 1021_go
+        ports:
+            - "8080:8080"
+        volumes: 
+            - ./myapp:/go/src
+            - ./myapp/bin:/go/bin
+            - ./myapp/pkg:/go/pkg
+        depends_on:
+            - mysql
+        tty: true
+    mysql:
+        container_name: 1021_mysql
+        image: mysql:8.0.21
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+    phpmyadmin:
+        depends_on:
+            - mysql
+        image: phpmyadmin/phpmyadmin
+        container_name: 1021_phpmyadmin
+        restart: always
+        ports:
+            - "8082:80"
+        environment:
+            PMA_HOST: mysql
