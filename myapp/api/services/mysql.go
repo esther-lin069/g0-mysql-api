@@ -42,14 +42,20 @@ type Job struct {
 	n     int
 }
 
-/*插入大量資料進入資料庫*/
-func Insertmysql() string {
+func CreateDbConn() *sql.DB {
 	//建立連線
 	var connString = fmt.Sprintf("%s:%s@tcp(%s)/%s?&charset=utf8mb4&collation=utf8mb4_unicode_ci", user, password, host, database)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
 		log.Fatal("資料庫連線錯誤")
 	}
+	return db
+}
+
+/*插入大量資料進入資料庫*/
+func Insertmessages() string {
+
+	db := CreateDbConn()
 	defer db.Close()
 
 	//db設定
