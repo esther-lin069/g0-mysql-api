@@ -42,7 +42,7 @@ func RandName() string {
 }
 
 func RandType_tag() string {
-	return types[g.Intn(5)]
+	return types[g.Intn(len(types))]
 }
 
 func Namehash(name string) string {

@@ -99,10 +99,10 @@ func worker(jobChan <-chan Job) {
 }
 
 func sqlExec(job Job) {
-	buf := make([]byte, 0, job.total+1)
+	buf := make([]byte, 0, job.total)
 	buf = append(buf, "INSERT INTO `messages` (`room_id`, `type`, `sender`, `content`, `hash`, `read_tab`) VALUES"...)
 
-	for i := 0; i < job.total; i++ {
+	for i := 0; i < job.total-1; i++ {
 		tmp_name := RandName()
 
 		msg := Message{
@@ -114,18 +114,16 @@ func sqlExec(job Job) {
 			read_tab: rand.Intn(2),
 		}
 		str := fmt.Sprintf("(%d ,'%s' ,'%s', '%s', '%s', %d)", msg.room_id, msg.type_tag, msg.sender, msg.content, msg.hash, msg.read_tab)
+
 		buf = append(buf, str+","...)
+
 	}
 
-	if len(buf) == 0 {
-		return
-	} else {
-		fmt.Println("---開始" + strconv.Itoa(job.n) + "次插入total條！")
-		_, err := job.db.Exec(strings.Trim(string(buf), ","))
-		checkErr(err)
-		fmt.Println("完成---" + strconv.Itoa(job.n) + "次插入total條！")
-		job.ch <- 1
-	}
+	fmt.Println("---開始" + strconv.Itoa(job.n) + "次插入total條！")
+	_, err := job.db.Exec(strings.Trim(string(buf), ","))
+	checkErr(err)
+	fmt.Println("完成---" + strconv.Itoa(job.n) + "次插入total條！")
+	job.ch <- 1
 
 }
 
