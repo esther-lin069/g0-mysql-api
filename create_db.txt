@@ -1,0 +1,54 @@
+-- phpMyAdmin SQL Dump
+-- version 5.0.3
+-- https://www.phpmyadmin.net/
+--
+-- 主機： mysql
+-- 產生時間： 2020 年 10 月 23 日 07:02
+-- 伺服器版本： 8.0.21
+-- PHP 版本： 7.4.11
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+--
+-- 資料庫： `chat_data`
+--
+
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `messages`
+--
+
+CREATE TABLE `messages` (
+  `id` bigint NOT NULL COMMENT '流水號',
+  `room_id` int NOT NULL COMMENT '聊天室id',
+  `type` enum('system','normal','public','private','file_info') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '發言類型',
+  `sender` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '發言人',
+  `content` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '發言內容',
+  `hash` varchar(40) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '雜湊值',
+  `read_tab` tinyint(1) NOT NULL DEFAULT '0' COMMENT '已讀標記',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '產生時間'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- 已傾印資料表的索引
+--
+
+--
+-- 資料表索引 `messages`
+--
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
+--
+
+--
+-- 使用資料表自動遞增(AUTO_INCREMENT) `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT COMMENT '流水號';
+COMMIT;

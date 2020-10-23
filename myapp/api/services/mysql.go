@@ -1,8 +1,9 @@
-package main
+package services
 
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -41,17 +42,13 @@ type Job struct {
 	n     int
 }
 
-func main() {
-	mysql()
-}
-
-func mysql() {
+/*插入大量資料進入資料庫*/
+func Insertmysql() string {
 	//建立連線
 	var connString = fmt.Sprintf("%s:%s@tcp(%s)/%s?&charset=utf8mb4&collation=utf8mb4_unicode_ci", user, password, host, database)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
-		fmt.Println("資料庫連線錯誤", err)
-		return
+		log.Fatal("資料庫連線錯誤")
 	}
 	defer db.Close()
 
@@ -92,6 +89,7 @@ func mysql() {
 	curr := end.Sub(start)
 	fmt.Println("run time:", curr)
 
+	return curr.String()
 }
 
 func worker(jobChan <-chan Job) {

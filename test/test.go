@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -29,12 +30,11 @@ type Job struct {
 	n     int
 }
 
-func mysql() {
+func mysql() string {
 	var connString = fmt.Sprintf("%s:%s@tcp(%s)/%s?&charset=utf8mb4&collation=utf8mb4_unicode_ci", user, password, host, database)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
-		fmt.Println("访问数据库出错", err)
-		return
+		log.Fatal("資料庫連線錯誤")
 	}
 	defer db.Close()
 	db.SetConnMaxLifetime(time.Second * 500) //设置连接超时500秒
@@ -70,6 +70,8 @@ func mysql() {
 	end := time.Now()
 	curr := end.Sub(start)
 	fmt.Println("run time:", curr)
+
+	return curr.String()
 }
 
 func worker(jobChan <-chan Job) {

@@ -8,8 +8,6 @@ services:
             - "8080:8080"
         volumes: 
             - ./myapp:/go/src
-            - ./myapp/bin:/go/bin
-            - ./myapp/pkg:/go/pkg
         depends_on:
             - mysql
         tty: true
