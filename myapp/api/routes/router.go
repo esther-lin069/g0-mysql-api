@@ -9,11 +9,13 @@ import (
 func SetupRouter() *gin.Engine {
 
 	r := gin.Default()
-	r.GET("/insert", controller.InsertData)
+	//r.GET("/insert", controller.InsertData)
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"test": "yes"})
 	})
+
+	r.GET("/all", controller.FetchAll)
 
 	return r
 }
