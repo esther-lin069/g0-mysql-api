@@ -2,28 +2,75 @@ package services
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type ReturnMessage struct {
-	Status     bool   `json:"status"`
-	Error_code error  `json:"error"`
-	DB_runtime string `json:"runtime"`
-	Result     string `json:"result"`
+	Status     bool     `json:"status"`
+	Error_code error    `json:"error"`
+	DB_runtime string   `json:"runtime"`
+	Result     []string `json:"result"`
 }
 
 func All(f string) ReturnMessage {
 	db := CreateDbConn()
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println(err)
+		}
+		db.Close()
+	}()
 	st := time.Now()
-
-	result := ReturnMessage{
+	rm := ReturnMessage{
 		Status:     true,
 		Error_code: fmt.Errorf("0"),
-		DB_runtime: time.Since(st).String(),
-		Result:     "test",
+		DB_runtime: "",
 	}
 
-	return result
+	//fields := strings.Split(f, ",")
+	sql := MakeCode(f)
+	rows, err := db.Query(sql)
+	checkErr(err)
+
+	cols, err := rows.Columns()
+	checkErr(err)
+
+	rawResult := make([][]byte, len(cols))
+	result := make([]string, len(cols))
+
+	dest := make([]interface{}, len(cols)) // A temporary interface{} slice
+	for i := range rawResult {
+		dest[i] = &rawResult[i] // Put pointers to each string in the interface slice
+	}
+
+	total_rows := make([]string, 0)
+	for rows.Next() {
+		err = rows.Scan(dest...)
+		if err != nil {
+			rm.Error_code = fmt.Errorf(err.Error())
+			return rm
+		}
+
+		for i, raw := range rawResult {
+			if raw == nil {
+				result[i] = "\\N"
+			} else {
+				result[i] = string(raw)
+			}
+		}
+		total_rows = append(total_rows, strings.Join(result, ","))
+	}
+
+	rm.DB_runtime = time.Since(st).String()
+	rm.Result = total_rows
+
+	return rm
+}
+
+func MakeCode(fields string) string {
+	stm := "SELECT " + fields + " FROM messages"
+	return stm
 }
