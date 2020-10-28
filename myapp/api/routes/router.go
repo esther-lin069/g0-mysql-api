@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	"main/api/controller"
@@ -9,10 +11,10 @@ import (
 func SetupRouter() *gin.Engine {
 
 	r := gin.Default()
+	r.LoadHTMLGlob("view/*")
 	//r.GET("/insert", controller.InsertData)
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"test": "yes"})
+		c.HTML(http.StatusOK, "index.html", nil)
 	})
 
 	r.GET("/all", controller.FetchAll)
