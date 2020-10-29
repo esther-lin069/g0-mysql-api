@@ -34,14 +34,18 @@ var types = []string{
 	"system", "normal", "public", "private", "file_info",
 }
 
-var g *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+func getRand() *rand.Rand {
+	return rand.New(rand.NewSource(time.Now().UnixNano()))
+}
 
 func RandName() string {
+	g := getRand()
 	length := len(names)
 	return names[g.Intn(length)]
 }
 
 func RandType_tag() string {
+	g := getRand()
 	return types[g.Intn(len(types))]
 }
 

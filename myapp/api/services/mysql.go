@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -53,10 +54,15 @@ func CreateDbConn() *sql.DB {
 }
 
 /*插入大量資料進入資料庫*/
-func Insertmessages() string {
+func Insertmessages() (err error, t string) {
 
 	db := CreateDbConn()
-	defer db.Close()
+	defer func() {
+		db.Close()
+		if recover() != nil {
+			err = errors.New("panic!")
+		}
+	}()
 
 	//db設定
 	db.SetConnMaxLifetime(time.Second * 500)
@@ -95,7 +101,7 @@ func Insertmessages() string {
 	curr := end.Sub(start)
 	fmt.Println("run time:", curr)
 
-	return curr.String()
+	return errors.New("0"), curr.String()
 }
 
 func worker(jobChan <-chan Job) {
@@ -110,7 +116,7 @@ func sqlExec(job Job) {
 
 	for i := 0; i < job.total-1; i++ {
 		tmp_name := RandName()
-
+		g := getRand()
 		msg := Message{
 			room_id:  g.Intn(1000),
 			type_tag: RandType_tag(),

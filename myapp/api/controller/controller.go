@@ -29,14 +29,24 @@ func GetTime() string {
 }
 
 /*資料插入資料庫*/
-// func InsertData(c *gin.Context) {
-// 	st := time.Now()
-// 	r := ResponseCode{
-// 		receive_time: time.Now()
-// 		db_runtime: services.Insertmessages(),
-// 	}
-// 	ResponesWithJson(c, ApiRespones{c.Writer.Status(), r, time.Now().Sub(st)})
-// }
+func InsertData(c *gin.Context) {
+	st := time.Now()
+	err, db_time := services.Insertmessages()
+	api_runTime := time.Since(st)
+	res := ApiRespones{
+		ResultCode:   c.Writer.Status(),
+		receive_time: GetTime(),
+		apiRunTime:   api_runTime.String(),
+	}
+
+	c.JSON(res.ResultCode, gin.H{
+		"Code":       res.ResultCode,
+		"Error":      err,
+		"Receive_at": res.receive_time,
+		"ApiRunTime": res.apiRunTime,
+		"DBRunTime":  db_time,
+	})
+}
 
 func FetchAll(c *gin.Context) {
 	st := time.Now()
