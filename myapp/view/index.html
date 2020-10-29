@@ -13,7 +13,7 @@
 <style>
   .box{
     overflow: auto;
-    height: 48vh;
+    height: 45vh;
     width: 100%;
     padding: 1.5em;
     background-color: aliceblue;
@@ -59,7 +59,44 @@
                     <option value="1">1</option>
                   </select>
                 </div>
-              </div> 
+              </div>
+              <div class="form-group row">
+                <label class="col-4">欄位</label> 
+                <div class="col-8">
+                  <div class="custom-control custom-checkbox custom-control-inline">
+                    <input name="fields" id="fields_0" type="checkbox" required="required" class="custom-control-input" value="id" checked="checked"> 
+                    <label for="fields_0" class="custom-control-label">id</label>
+                  </div>
+                  <div class="custom-control custom-checkbox custom-control-inline">
+                    <input name="fields" id="fields_1" type="checkbox" required="required" class="custom-control-input" value="room_id" checked="checked"> 
+                    <label for="fields_1" class="custom-control-label">room_id</label>
+                  </div>
+                  <div class="custom-control custom-checkbox custom-control-inline">
+                    <input name="fields" id="fields_2" type="checkbox" required="required" class="custom-control-input" value="type" checked="checked"> 
+                    <label for="fields_2" class="custom-control-label">type</label>
+                  </div>
+                  <div class="custom-control custom-checkbox custom-control-inline">
+                    <input name="fields" id="fields_3" type="checkbox" required="required" class="custom-control-input" value="sender" checked="checked"> 
+                    <label for="fields_3" class="custom-control-label">sender</label>
+                  </div>
+                  <div class="custom-control custom-checkbox custom-control-inline">
+                    <input name="fields" id="fields_4" type="checkbox" required="required" class="custom-control-input" value="content" checked="checked"> 
+                    <label for="fields_4" class="custom-control-label">content</label>
+                  </div>
+                  <div class="custom-control custom-checkbox custom-control-inline">
+                    <input name="fields" id="fields_5" type="checkbox" required="required" class="custom-control-input" value="hash" checked="checked"> 
+                    <label for="fields_5" class="custom-control-label">hash</label>
+                  </div>
+                  <div class="custom-control custom-checkbox custom-control-inline">
+                    <input name="fields" id="fields_6" type="checkbox" required="required" class="custom-control-input" value="read_tab" checked="checked"> 
+                    <label for="fields_6" class="custom-control-label">read_tab</label>
+                  </div>
+                  <div class="custom-control custom-checkbox custom-control-inline">
+                    <input name="fields" id="fields_7" type="checkbox" required="required" class="custom-control-input" value="created_at" checked="checked"> 
+                    <label for="fields_7" class="custom-control-label">created_at</label>
+                  </div>
+                </div>
+              </div>  
               <div class="form-group row">
                 <div class="offset-4 col-8">
                   <button id="submit" type="button" class="btn btn-primary">Submit</button>
@@ -85,10 +122,15 @@
 
     $("#submit").on("click",function(){
       var data = [];
+      var fields = []
       var room_ranges = $("#room_id").val()
       var type = $("#type").val()
       var sender = $("#sender").val()
       var read_tab = $("#read_tab").val()
+      $("input[name='fields']").each(function(){
+        if(this.checked == true)
+          fields.push(this.value)
+      })
 
       room_id = room_ranges.split("-")
       if(room_id[0] == room_id[1]){
@@ -100,7 +142,7 @@
       if(type != "all"){
         data.push("type = '" + type + "'")
       }
-      if(sender != "all"){
+      if(sender != "all" && sender != ""){
         data.push("sender = '" + sender + "'")
       }
       if(read_tab != "all"){
@@ -110,9 +152,9 @@
       $.ajax({
         type: 'POST',
         url: location.protocol + "/search",
-        data: {"condition": data.join(' AND ')},
+        data: {"condition": data.join(' AND '),
+               "fields": fields.join(",") },
         success: function(result){
-          console.log(result)
           $("#result").text(JSON.stringify(result))
         }
       })

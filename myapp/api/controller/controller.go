@@ -56,7 +56,7 @@ func FetchAll(c *gin.Context) {
 
 func FetchWhere(c *gin.Context) {
 	st := time.Now()
-	fields := "*"
+	fields := c.Request.FormValue("fields")
 	condition := c.Request.FormValue("condition")
 	result := services.SqlQuery(fields, condition)
 	api_runTime := time.Since(st)
@@ -64,7 +64,7 @@ func FetchWhere(c *gin.Context) {
 	response := ApiRespones{
 		ResultCode:   c.Writer.Status(),
 		receive_time: GetTime(),
-		parameters:   fields,
+		parameters:   `{"field":` + fields + `"condition":` + condition + `}`,
 		apiRunTime:   api_runTime.String(),
 	}
 
