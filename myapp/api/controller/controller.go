@@ -80,6 +80,7 @@ func ResponesWithJson(c *gin.Context, res ApiRespones, rm services.ReturnMessage
 		"Error":      rm.Error_code,
 		"ApiRunTime": res.apiRunTime,
 		"DBRunTime":  rm.DB_runtime,
+		"RowCount":   rm.RowCount,
 		"Result":     rm.Result,
 	})
 }
