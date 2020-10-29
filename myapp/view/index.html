@@ -13,7 +13,7 @@
 <style>
   .box{
     overflow: auto;
-    height: 45vh;
+    height: 40vh;
     width: 100%;
     padding: 1.5em;
     background-color: aliceblue;
@@ -103,6 +103,7 @@
                 </div>
               </div>
         </form>
+        <p id="info"></p>
         <div id="result" class="box"></div>
     </div>
 </body>
@@ -155,6 +156,7 @@
         data: {"condition": data.join(' AND '),
                "fields": fields.join(",") },
         success: function(result){
+          $("#info").text("DB執行時間："+result.DBRunTime+" / 資料列數：" + result.RowCount)
           $("#result").text(JSON.stringify(result))
         }
       })
