@@ -19,5 +19,7 @@ func SetupRouter() *gin.Engine {
 
 	r.GET("/all", controller.FetchAll)
 
+	r.POST("/search", controller.FetchWhere)
+
 	return r
 }

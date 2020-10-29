@@ -15,7 +15,7 @@ type ReturnMessage struct {
 	Result     []string `json:"result"`
 }
 
-func All(f string) ReturnMessage {
+func SqlQuery(f string, c string) ReturnMessage {
 	db := CreateDbConn()
 	defer func() {
 		if err := recover(); err != nil {
@@ -31,7 +31,7 @@ func All(f string) ReturnMessage {
 	}
 
 	//fields := strings.Split(f, ",")
-	sql := MakeCode(f)
+	sql := MakeCode(f, c)
 	rows, err := db.Query(sql)
 	checkErr(err)
 
@@ -70,7 +70,13 @@ func All(f string) ReturnMessage {
 	return rm
 }
 
-func MakeCode(fields string) string {
-	stm := "SELECT " + fields + " FROM messages"
+func MakeCode(fields string, condition string) string {
+	var stm string
+	if condition == "" {
+		stm = "SELECT " + fields + " FROM messages"
+	} else {
+		stm = "SELECT " + fields + " FROM messages WHERE " + condition
+	}
+
 	return stm
 }

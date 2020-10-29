@@ -10,11 +10,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
-
+<style>
+  .box{
+    overflow: auto;
+    height: 48vh;
+    width: 100%;
+    padding: 1.5em;
+    background-color: aliceblue;
+  }
+</style>
 <body>
 
     <div class="container w-50">
-        <div style="height:100px"></div>
+        <div style="height:60px"></div>
         <h3>查詢</h3><br>
         <form>
             <p>
@@ -23,7 +31,7 @@
             </p>  
             <div id="slider-range"></div> <br> 
             <div class="form-group row">
-                <label for="type" class="col-4 col-form-label">發言類型：</label> 
+                <label for="type" class="col-4 col-form-label">發言類型</label> 
                 <div class="col-8">
                   <select id="type" name="type" class="custom-select">
                     <option value="all">-</option>
@@ -58,6 +66,7 @@
                 </div>
               </div>
         </form>
+        <div id="result" class="box"></div>
     </div>
 </body>
 <script>
@@ -75,13 +84,39 @@
     } );
 
     $("#submit").on("click",function(){
-        var data = [];
-        var room_id = $("#room_id").val()
-        var type = $("#type").val()
-        var sender = $("#sender").val()
-        var read_tab = $("#read_tab").val()
+      var data = [];
+      var room_ranges = $("#room_id").val()
+      var type = $("#type").val()
+      var sender = $("#sender").val()
+      var read_tab = $("#read_tab").val()
 
-        console.log(room_id + type + sender + read_tab)
+      room_id = room_ranges.split("-")
+      if(room_id[0] == room_id[1]){
+        data.push("room_id = " + room_id[0]);
+      }
+      else{
+        data.push("room_id BETWEEN " + room_id[0] + " AND " + room_id[1])
+      }
+      if(type != "all"){
+        data.push("type = '" + type + "'")
+      }
+      if(sender != "all"){
+        data.push("sender = '" + sender + "'")
+      }
+      if(read_tab != "all"){
+        data.push("read_tab = " + read_tab)
+      }
+      
+      $.ajax({
+        type: 'POST',
+        url: location.protocol + "/search",
+        data: {"condition": data.join(' AND ')},
+        success: function(result){
+          console.log(result)
+          $("#result").text(JSON.stringify(result))
+        }
+      })
+
     })
 </script>
 </html>
